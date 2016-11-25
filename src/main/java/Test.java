@@ -17,6 +17,7 @@ public class Test {
         DbConnect dbConnect = new DbConnect();
         Connection conn = dbConnect.getConnection();
         String query = "INSERT INTO RI.`vocabulaire`(`mot`, `document`) VALUES( ?, ?)";
+        FrenchStemmer frenchStemmer = new FrenchStemmer();
 
         //InputStream in = Test.class.getResourceAsStream("corpus-utf8/D1.html");
         File folder = new File("target/classes/corpus-utf8");
@@ -28,12 +29,13 @@ public class Test {
                     pstatement.setString(1, "mot");
                     pstatement.setString(2, "D1.html");
                     pstatement.executeUpdate();
-                    Scanner scanner = new Scanner(tmpFile);
+                    //Used to read files
+                    /*Scanner scanner = new Scanner(tmpFile);
                     while (scanner.hasNextLine()) {
                         String line = scanner.nextLine();
                         System.out.println(line);
                     }
-                    scanner.close();
+                    scanner.close();*/
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -41,7 +43,7 @@ public class Test {
         }
 
         String par = "intelligemment";
-        FrenchStemmer frenchStemmer = new FrenchStemmer();
+
         frenchStemmer.setCurrent(par);
         frenchStemmer.stem();
         System.out.println(frenchStemmer.getCurrent());
