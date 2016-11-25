@@ -4,11 +4,12 @@
 import org.tartarus.snowball.ext.FrenchStemmer;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Test {
-    private Map table;
+    private static Map table;
     public static void main(String[] args) throws IOException {
         String par = "intelligemment";
         FrenchStemmer frenchStemmer = new FrenchStemmer();
@@ -16,15 +17,9 @@ public class Test {
         frenchStemmer.stem();
         System.out.println(frenchStemmer.getCurrent());
         TestJsoup test = new TestJsoup();
-        test.Testfile();
-
+//        test.Testfile();
+        table = HtmlReader.newInstance().read("");
+        System.out.println("TEST");
     }
 
-    private void ReadString(String s){
-        table = new LinkedHashMap<String,Integer>();
-        String temp[]  = s.split(" ");
-        for(String x:temp){
-            
-        }
-    }
 }
