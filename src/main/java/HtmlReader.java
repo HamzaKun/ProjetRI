@@ -9,11 +9,7 @@ import java.util.Map;
 public class HtmlReader {
     private JsoupUnit jsoup;
     public HtmlReader(){
-        try {
-            jsoup = new JsoupUnit();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        jsoup = new JsoupUnit();
     }
     /**
      *
