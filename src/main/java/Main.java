@@ -27,7 +27,7 @@ public class Main {
         for (File tmpFile : listOfFiles) {
             if (tmpFile.isFile()) {
                 try {
-                    Map<String, Integer> vocabulaire;
+                    Map<String, WordAttribute> vocabulaire;
                     vocabulaire = HtmlReader.newInstance().read("target/classes/corpus-utf8/" + tmpFile.getName());
                     Set set = vocabulaire.entrySet();
                     // Get an iterator
