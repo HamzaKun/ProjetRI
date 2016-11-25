@@ -35,5 +35,8 @@ public class WordAttribute {
     public void addPath(String path){
         this.index.put(path,1);
     }
+    public void increaseFrequencyInTotal(){
+        frequency += 1;
+    }
 
 }
