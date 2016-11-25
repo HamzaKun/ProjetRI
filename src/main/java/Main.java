@@ -8,15 +8,17 @@ import java.beans.Statement;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
-public class Test {
-
+public class Main {
 
     public static void main(String[] args) {
         DbConnect dbConnect = new DbConnect();
         Connection conn = dbConnect.getConnection();
-        String query = "INSERT INTO RI.`vocabulaire`(`mot`, `document`) VALUES( ?, ?)";
+        String query = "INSERT INTO RI.`vocabulaire`(`mot`, `frequence`) VALUES( ?, ?)";
         FrenchStemmer frenchStemmer = new FrenchStemmer();
 
         //InputStream in = Test.class.getResourceAsStream("corpus-utf8/D1.html");
@@ -25,10 +27,27 @@ public class Test {
         for (File tmpFile : listOfFiles) {
             if (tmpFile.isFile()) {
                 try {
+                    Map<String, Integer> vocabulaire;
+                    vocabulaire = HtmlReader.newInstance().read("target/classes/corpus-utf8/" + tmpFile.getName());
+                    Set set = vocabulaire.entrySet();
+                    // Get an iterator
+                    Iterator i = set.iterator();
                     PreparedStatement pstatement = conn.prepareStatement(query);
-                    pstatement.setString(1, "mot");
-                    pstatement.setString(2, "D1.html");
-                    pstatement.executeUpdate();
+                    // Display elements
+                    while (i.hasNext()) {
+                        Map.Entry me = (Map.Entry) i.next();
+                        frenchStemmer.setCurrent((String)me.getKey());
+                        frenchStemmer.stem();
+                        pstatement.setString(1, frenchStemmer.getCurrent());
+                        pstatement.setInt(2, (Integer) me.getValue());
+                        pstatement.executeUpdate();
+
+
+                        System.out.print(me.getKey() + ": ");
+                        System.out.println(me.getValue());
+                    }
+                    pstatement.close();
+
                     //Used to read files
                     /*Scanner scanner = new Scanner(tmpFile);
                     while (scanner.hasNextLine()) {
