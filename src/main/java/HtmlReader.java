@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -6,31 +7,43 @@ import java.util.Map;
  * Created by BinaryTree on 2016/11/25.
  */
 public class HtmlReader {
-    private TestJsoup jsoup;
+    private JsoupUnit jsoup;
     public HtmlReader(){
         try {
-            jsoup = new TestJsoup();
+            jsoup = new JsoupUnit();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    // read html from local document
-    /*@ Return HashMap key ==  word Value == frequency
-    * */
-    public Map<String,Integer> read(String s) throws IOException {
-        String temp = jsoup.ReadHtml(s);
-        Map table = new HashMap<String,Integer>();
+    /**
+     *
+     * */
+    public Map<String,WordAttribute> read(String filePath) throws IOException {
+        File file = new File(filePath);
+        String fileName = file.getName();
+        String temp = jsoup.ReadHtml(file);
+        Map vocabulary = new HashMap<String,WordAttribute>();
         String words[]  = temp.split(" ");
-        for(String x:words){
-            if(table.containsKey(x)){
-                table.put(x,(Integer)table.get(x) + 1);
+        WordAttribute wordAttribute;
+        for(String word:words){
+            //if word already exist in vocabulary
+            if(vocabulary.containsKey(word)){
+                wordAttribute = (WordAttribute) vocabulary.get(word);
+                //Add File name to word attribut
+                if(!wordAttribute.getIndex().containsKey(fileName)){
+                    wordAttribute.addPath(filePath);
+                }else {
+                    wordAttribute.increaseFrequencyInPath(fileName);
+                }
             }else {
-                table.put(x,1);
+                wordAttribute = new WordAttribute();
+                wordAttribute.addPath(file.getPath());
+                vocabulary.put(word,wordAttribute);
             }
         }
-        return table;
+        return vocabulary;
     }
-
+    //create a new instance to use
     public static HtmlReader newInstance() {
         HtmlReader temp = new HtmlReader();
         return temp;
