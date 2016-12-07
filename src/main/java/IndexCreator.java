@@ -16,6 +16,14 @@ public class IndexCreator {
 
     Map<String, WordAttribute> vocabulary;
 
+    public Map<String, WordAttribute> getVocabulary() {
+        return vocabulary;
+    }
+
+    public void setVocabulary(Map<String, WordAttribute> vocabulary) {
+        this.vocabulary = vocabulary;
+    }
+
     public void createVocabulary(String resourcesPath) {
         FrenchStemmer frenchStemmer = new FrenchStemmer();
         File folder = new File(resourcesPath);
@@ -49,40 +57,50 @@ public class IndexCreator {
 
     public void createIndex(String resourcesPath) {
         DbConnect dbConnect = new DbConnect();
-        Connection conn = dbConnect.getConnection();
-        String query = "INSERT INTO RI.`vocabulaire`(`mot`, `frequence`) VALUES( ?, ?)";
-        createVocabulary(conn, query);
+        //Connection conn = dbConnect.getConnection();
+        //String query = "INSERT INTO RI.`vocabulaire`(`mot`, `frequence`) VALUES( ?, ?)";
+        createVocabulary();
+
     }
 
-    public void createVocabulary(Connection conn, String query) {
+    public void createVocabulary() {
         FrenchStemmer frenchStemmer = new FrenchStemmer();
         File folder = new File("target/classes/corpus-utf8");
         File[] listOfFiles = folder.listFiles();
+        vocabulary = null;
+        HtmlReader htmlReader = HtmlReader.newInstance();
+        /**
+         * Iterate through the files of the repo
+         */
+
         for (File tmpFile : listOfFiles) {
             if (tmpFile.isFile()) {
                 try {
-                    Map<String, WordAttribute> vocabulaire;
-                    vocabulaire = HtmlReader.newInstance().read("target/classes/corpus-utf8/" + tmpFile.getName());
-                    Set set = vocabulaire.entrySet();
+                    if ( vocabulary == null)
+                        vocabulary = htmlReader.read("target/classes/corpus-utf8/" + tmpFile.getName());
+                    else
+                        vocabulary = htmlReader.read(vocabulary, "target/classes/corpus-utf8/" + tmpFile.getName());
+                    //Set set = vocabulary.entrySet();
                     // Get an iterator
-                    Iterator i = set.iterator();
-                    PreparedStatement pstatement = conn.prepareStatement(query);
+                    //Iterator i = set.iterator();
+                    //PreparedStatement pstatement = conn.prepareStatement(query);
                     // Display elements
-                    while (i.hasNext()) {
+                    /*while (i.hasNext()) {
                         Map.Entry me = (Map.Entry) i.next();
-                        frenchStemmer.setCurrent((String)me.getKey());
-                        frenchStemmer.stem();
-                        pstatement.setString(1, frenchStemmer.getCurrent());
-                        pstatement.setInt(2, (Integer) me.getValue());
-                        pstatement.executeUpdate();
-                        System.out.print(me.getKey() + ": ");
-                        System.out.println(me.getValue());
-                    }
-                    pstatement.close();
+                        /*pstatement.setString(1, frenchStemmer.getCurrent());
+                        pstatement.setInt(2, (Integer) me.getValue());*/
+                        //pstatement.executeUpdate();*/
+                        //System.out.print(frenchStemmer.getCurrent() + ": ");
+                        //System.out.println(me.getValue().getFrequency());
+                    //}
+                    //pstatement.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
+        /**
+         * We should iterate on the map
+         */
     }
 }

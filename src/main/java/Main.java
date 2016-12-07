@@ -17,6 +17,15 @@ import java.util.regex.Pattern;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println(Pattern.matches("^a", "aaaab"));
+        DbConnect dbConnect = new DbConnect();
+        IndexCreator indexCreator = new IndexCreator();
+        String query = "INSERT INTO RI.`vocabulaire`(`mot`, `frequence`) VALUES( ?, ?)";
+        indexCreator.createVocabulary();
+        Set set = indexCreator.getVocabulary().entrySet();
+        Iterator i = set.iterator();
+        while (i.hasNext()) {
+            Map.Entry me = (Map.Entry) i.next();
+            System.out.println(me.getKey());
+        }
     }
 }

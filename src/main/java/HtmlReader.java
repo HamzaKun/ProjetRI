@@ -1,3 +1,5 @@
+import org.tartarus.snowball.ext.FrenchStemmer;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,13 +33,25 @@ public class HtmlReader {
         }
 
         String words[]  = temp.split(" ");
+        FrenchStemmer frenchStemmer = new FrenchStemmer();
         WordAttribute wordAttribute;
         for(String word:words){
+
             //if word already exist in vocabulary
             if(vocabulary.containsKey(word)){
+                /*
+                To iterate & check the stemmed words, not the others
+                !!
+                NB: If we want to add a regex verification
+                 We should add it here !!!!!!!
+                 */
+
+                frenchStemmer.setCurrent(word);
+                frenchStemmer.stem();
+                word = frenchStemmer.getCurrent();
                 wordAttribute = vocabulary.get(word);
                 //Add File name to word attribute
-                if(!wordAttribute.getIndex().containsKey(fileName)){
+                if( (vocabulary.size() == 0) || !wordAttribute.getIndex().containsKey(fileName)){
                     wordAttribute.addPath(fileName);
                 }else {
                     wordAttribute.increaseFrequencyInPath(fileName);
