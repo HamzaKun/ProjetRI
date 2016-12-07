@@ -36,7 +36,9 @@ public class HtmlReader {
         FrenchStemmer frenchStemmer = new FrenchStemmer();
         WordAttribute wordAttribute;
         for(String word:words){
-
+            frenchStemmer.setCurrent(word);
+            frenchStemmer.stem();
+            word = frenchStemmer.getCurrent();
             //if word already exist in vocabulary
             if(vocabulary.containsKey(word)){
                 /*
@@ -45,10 +47,6 @@ public class HtmlReader {
                 NB: If we want to add a regex verification
                  We should add it here !!!!!!!
                  */
-
-                frenchStemmer.setCurrent(word);
-                frenchStemmer.stem();
-                word = frenchStemmer.getCurrent();
                 wordAttribute = vocabulary.get(word);
                 //Add File name to word attribute
                 if( (vocabulary.size() == 0) || !wordAttribute.getIndex().containsKey(fileName)){

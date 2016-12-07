@@ -27,5 +27,6 @@ public class Main {
             Map.Entry me = (Map.Entry) i.next();
             System.out.println(me.getKey());
         }
+        System.out.println("The size : " + indexCreator.getVocabulary().size());
     }
 }
