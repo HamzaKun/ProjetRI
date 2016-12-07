@@ -1,14 +1,20 @@
+import org.apache.lucene.analysis.StopFilter;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.apache.lucene.util.Version;
 import org.tartarus.snowball.ext.FrenchStemmer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.StringReader;
+import java.util.*;
 
 /**
  * Created by BinaryTree on 2016/11/25.
  */
 public class HtmlReader {
+    private final String[] stopwords ={"le", "la", "est","La","Le","Les"};
     private JsoupUnit jsoup;
     private Map<String,WordAttribute> vocabulary;
     public HtmlReader(){
@@ -31,11 +37,19 @@ public class HtmlReader {
         }else {
             vocabulary = map;
         }
+        /**
+        *\p{L} is the Unicode property for a letter in any language.
 
-        String words[]  = temp.split(" ");
+        *\P{L} is the negation of \p{L}, means it will match everything that is not a letter. (I understood that is what you want.)
+        *http://stackoverflow.com/questions/17061050/using-regex-to-clean-up-the-string
+        * */
+        List<String> words = new LinkedList<String>(Arrays.asList(temp.split("\\P{L}+")));
+        words.removeAll(Arrays.asList(stopwords));
+
         FrenchStemmer frenchStemmer = new FrenchStemmer();
         WordAttribute wordAttribute;
         for(String word:words){
+            //
             frenchStemmer.setCurrent(word);
             frenchStemmer.stem();
             word = frenchStemmer.getCurrent();
@@ -67,5 +81,12 @@ public class HtmlReader {
     public static HtmlReader newInstance() {
         HtmlReader temp = new HtmlReader();
         return temp;
+    }
+
+    private String cleanWords(String words){
+
+        // TODO: 2016/12/7 add clean words method using lucene analyser
+        return "";
+
     }
 }
