@@ -20,13 +20,13 @@ public class Main {
         DbConnect dbConnect = new DbConnect();
         IndexCreator indexCreator = new IndexCreator();
         String query = "INSERT INTO RI.`vocabulaire`(`mot`, `frequence`) VALUES( ?, ?)";
-        indexCreator.createVocabulary();
+        indexCreator.createVocabulary().fillDatabase();
         Set set = indexCreator.getVocabulary().entrySet();
         Iterator i = set.iterator();
-        while (i.hasNext()) {
+        /*while (i.hasNext()) {
             Map.Entry me = (Map.Entry) i.next();
             System.out.println(me.getKey());
-        }
+        }*/
         System.out.println("The size : " + indexCreator.getVocabulary().size());
     }
 }
