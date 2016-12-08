@@ -38,7 +38,7 @@ public class JsoupUnit {
         for(int i = 0;i < keyWords.size();i += 2){
             //System.out.println(keyWords.get(i).text());
 
-            keyList.add(keyWords.get(i).text().split("\\P{L}+"));
+            keyList.add(keyWords.get(i).text().split("[^\\p{L}\\d]+"));
         }
 
         return  keyList;

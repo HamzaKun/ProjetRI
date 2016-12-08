@@ -1,11 +1,4 @@
-import org.apache.lucene.analysis.StopFilter;
-import org.apache.lucene.analysis.StopwordAnalyzerBase;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.fr.FrenchAnalyzer;
-import org.apache.lucene.analysis.fr.FrenchLightStemFilter;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.standard.StandardTokenizer;
-import org.apache.lucene.util.Version;
+
 import org.tartarus.snowball.ext.FrenchStemmer;
 
 import java.io.File;
@@ -45,8 +38,9 @@ public class HtmlReader {
 
         *\P{L} is the negation of \p{L}, means it will match everything that is not a letter. (I understood that is what you want.)
         *http://stackoverflow.com/questions/17061050/using-regex-to-clean-up-the-string
+         * [^\p{L}\d]+ means those who not a letter and not a number.
         * */
-        List<String> words = new LinkedList<String>(Arrays.asList(temp.split("\\P{L}+")));
+        List<String> words = new LinkedList<String>(Arrays.asList(temp.split("[^\\p{L}\\d]+")));
         words.removeAll(Arrays.asList(FRENCH_STOP_WORDS));
 
         FrenchStemmer frenchStemmer = new FrenchStemmer();
