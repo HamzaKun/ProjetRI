@@ -1,5 +1,8 @@
 import org.apache.lucene.analysis.StopFilter;
+import org.apache.lucene.analysis.StopwordAnalyzerBase;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.fr.FrenchAnalyzer;
+import org.apache.lucene.analysis.fr.FrenchLightStemFilter;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.util.Version;
@@ -7,14 +10,14 @@ import org.tartarus.snowball.ext.FrenchStemmer;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.*;
 
 /**
  * Created by BinaryTree on 2016/11/25.
  */
 public class HtmlReader {
-    private final String[] stopwords ={"le", "la", "est","La","Le","Les"};
+    //copied from lucene FrenchAnalyzer.FRENCH_STOP_WORDS
+    public static final String[] FRENCH_STOP_WORDS = new String[]{"a", "afin", "ai", "ainsi", "après", "attendu", "au", "aujourd", "auquel", "aussi", "autre", "autres", "aux", "auxquelles", "auxquels", "avait", "avant", "avec", "avoir", "c", "car", "ce", "ceci", "cela", "celle", "celles", "celui", "cependant", "certain", "certaine", "certaines", "certains", "ces", "cet", "cette", "ceux", "chez", "ci", "combien", "comme", "comment", "concernant", "contre", "d", "dans", "de", "debout", "dedans", "dehors", "delà", "depuis", "derrière", "des", "désormais", "desquelles", "desquels", "dessous", "dessus", "devant", "devers", "devra", "divers", "diverse", "diverses", "doit", "donc", "dont", "du", "duquel", "durant", "dès", "elle", "elles", "en", "entre", "environ", "est", "et", "etc", "etre", "eu", "eux", "excepté", "hormis", "hors", "hélas", "hui", "il", "ils", "j", "je", "jusqu", "jusque", "l", "la", "laquelle", "le", "lequel", "les", "lesquelles", "lesquels", "leur", "leurs", "lorsque", "lui", "là", "ma", "mais", "malgré", "me", "merci", "mes", "mien", "mienne", "miennes", "miens", "moi", "moins", "mon", "moyennant", "même", "mêmes", "n", "ne", "ni", "non", "nos", "notre", "nous", "néanmoins", "nôtre", "nôtres", "on", "ont", "ou", "outre", "où", "par", "parmi", "partant", "pas", "passé", "pendant", "plein", "plus", "plusieurs", "pour", "pourquoi", "proche", "près", "puisque", "qu", "quand", "que", "quel", "quelle", "quelles", "quels", "qui", "quoi", "quoique", "revoici", "revoilà", "s", "sa", "sans", "sauf", "se", "selon", "seront", "ses", "si", "sien", "sienne", "siennes", "siens", "sinon", "soi", "soit", "son", "sont", "sous", "suivant", "sur", "ta", "te", "tes", "tien", "tienne", "tiennes", "tiens", "toi", "ton", "tous", "tout", "toute", "toutes", "tu", "un", "une", "va", "vers", "voici", "voilà", "vos", "votre", "vous", "vu", "vôtre", "vôtres", "y", "à", "ça", "ès", "été", "être", "ô"};
     private JsoupUnit jsoup;
     private Map<String,WordAttribute> vocabulary;
     public HtmlReader(){
@@ -44,7 +47,7 @@ public class HtmlReader {
         *http://stackoverflow.com/questions/17061050/using-regex-to-clean-up-the-string
         * */
         List<String> words = new LinkedList<String>(Arrays.asList(temp.split("\\P{L}+")));
-        words.removeAll(Arrays.asList(stopwords));
+        words.removeAll(Arrays.asList(FRENCH_STOP_WORDS));
 
         FrenchStemmer frenchStemmer = new FrenchStemmer();
         WordAttribute wordAttribute;
@@ -83,10 +86,4 @@ public class HtmlReader {
         return temp;
     }
 
-    private String cleanWords(String words){
-
-        // TODO: 2016/12/7 add clean words method using lucene analyser
-        return "";
-
-    }
 }
