@@ -1,14 +1,12 @@
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;//Element;
+import org.jsoup.select.Elements;
+import org.tartarus.snowball.ext.FrenchStemmer;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Created by BinaryTree on 2016/11/16.
@@ -33,12 +31,21 @@ public class JsoupUnit {
         }
         doc = Jsoup.parse(file, "UTF-8");
         //Element h2Element = doc.ge;
-        Elements h2Tags = doc.getElementsByTag("h2");
+        //Elements h2Tags = doc.getElementsByTag("h2");
         Elements keyWords = doc.getElementsByTag("dd");
         for(int i = 0;i < keyWords.size();i += 2){
-            //System.out.println(keyWords.get(i).text());
-
-            keyList.add(keyWords.get(i).text().split("[^\\p{L}\\d]+"));
+            //We stem the words before adding them to the query list
+            FrenchStemmer frenchStemmer = new FrenchStemmer();
+            String[] words = keyWords.get(i).text().split("[^\\p{L}\\d]+");
+            String[] stemmedWords = new String[words.length];
+            int j=0;
+            for(String word : words) {
+                frenchStemmer.setCurrent(word);
+                frenchStemmer.stem();
+                stemmedWords[j] = frenchStemmer.getCurrent();
+                ++j;
+            }
+            keyList.add(stemmedWords);
         }
 
         return  keyList;
@@ -60,18 +67,4 @@ public class JsoupUnit {
         return ReadHtml(file);
     }
 
-    public static void main(String[] args){
-        JsoupUnit jsoup = new JsoupUnit();
-        try {
-            File file = new File("target/classes/requetes.html");
-            List<String[]> list = jsoup.readQueries(file);
-            for (String[] keywords:list) {
-                for (String word : keywords) {
-                    System.out.println(word);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
