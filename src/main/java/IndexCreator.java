@@ -4,6 +4,7 @@ import sun.security.acl.WorldGroupImpl;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -63,7 +64,7 @@ public class IndexCreator {
 
     }
 
-    public void createVocabulary() {
+    public IndexCreator createVocabulary() {
         FrenchStemmer frenchStemmer = new FrenchStemmer();
         File folder = new File("target/classes/corpus-utf8");
         File[] listOfFiles = folder.listFiles();
@@ -72,7 +73,6 @@ public class IndexCreator {
         /**
          * Iterate through the files of the repo
          */
-
         for (File tmpFile : listOfFiles) {
             if (tmpFile.isFile()) {
                 try {
@@ -80,27 +80,68 @@ public class IndexCreator {
                         vocabulary = htmlReader.read("target/classes/corpus-utf8/" + tmpFile.getName());
                     else
                         vocabulary = htmlReader.read(vocabulary, "target/classes/corpus-utf8/" + tmpFile.getName());
-                    //Set set = vocabulary.entrySet();
-                    // Get an iterator
-                    //Iterator i = set.iterator();
-                    //PreparedStatement pstatement = conn.prepareStatement(query);
-                    // Display elements
-                    /*while (i.hasNext()) {
-                        Map.Entry me = (Map.Entry) i.next();
-                        /*pstatement.setString(1, frenchStemmer.getCurrent());
-                        pstatement.setInt(2, (Integer) me.getValue());*/
-                        //pstatement.executeUpdate();*/
-                        //System.out.print(frenchStemmer.getCurrent() + ": ");
-                        //System.out.println(me.getValue().getFrequency());
-                    //}
-                    //pstatement.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
+        return this;
         /**
          * We should iterate on the map
          */
+    }
+
+    public void fillDatabase() {
+        /*try {
+            DbConnect dbConnect = new DbConnect();
+            Connection connection = dbConnect.getConnection();
+            String query = "INSERT INTO RI.`vocabulaire`(`mot`, `frequence`) VALUES( ?, ?)";
+            connection.setAutoCommit(false);
+            PreparedStatement ps = connection.prepareStatement(query);
+            Set set = vocabulary.entrySet();
+            //Get an iterator
+            Iterator i = set.iterator();
+            while (i.hasNext()) {
+                Map.Entry me = (Map.Entry) i.next();
+                //System.out.println("(" + me.getKey() + ", "+ ((WordAttribute)me.getValue()).getFrequency() + ")");
+                ps.setString(1, (String) me.getKey());
+                ps.setInt(2, ((WordAttribute)me.getValue()).getFrequency());
+                ps.addBatch();
+            }
+            ps.executeBatch();
+            connection.commit();
+            //connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }*/
+        try {
+            //int wordId = 1;
+            DbConnect dbConnect = new DbConnect();
+            Connection connection = dbConnect.getConnection();
+            connection.setAutoCommit(false);
+            String queryIndex = "INSERT INTO RI.`index`(`mot`, `document`, `frequence`) VALUES( ?, ?, ?)";
+            PreparedStatement psIndex = connection.prepareStatement(queryIndex);
+            Set set = vocabulary.entrySet();
+            Iterator i = set.iterator();
+            while (i.hasNext()) {
+                Map.Entry me = (Map.Entry) i.next();
+                Set indexSet = ((WordAttribute)me.getValue()).getIndex().entrySet();
+                Iterator idxI = indexSet.iterator();
+                while (idxI.hasNext()) {
+                    Map.Entry indexEntry = (Map.Entry) idxI.next();
+                    psIndex.setString(1, (String) me.getKey());
+                    psIndex.setString(2, (String) indexEntry.getKey());
+                    psIndex.setInt(3, (Integer) indexEntry.getValue());
+                    psIndex.addBatch();
+                }
+
+                //wordId++;
+            }
+            psIndex.executeBatch();
+            connection.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 }
