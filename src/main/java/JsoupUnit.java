@@ -30,8 +30,6 @@ public class JsoupUnit {
             return null;
         }
         doc = Jsoup.parse(file, "UTF-8");
-        //Element h2Element = doc.ge;
-        //Elements h2Tags = doc.getElementsByTag("h2");
         Elements keyWords = doc.getElementsByTag("dd");
         for(int i = 0;i < keyWords.size();i += 2){
             //We stem the words before adding them to the query list
@@ -49,15 +47,8 @@ public class JsoupUnit {
         }
 
         return  keyList;
-/*        *//**
-         * To get the queries
-         *//*
-        for (Element tmp : h2Tags){
-            //System.out.println(tmp.ownText());
-        }*/
-
-        //return doc.body().text();
     }
+
     public String ReadHtml(String url) throws IOException {
         File file = new File(url);
         if(file == null){
