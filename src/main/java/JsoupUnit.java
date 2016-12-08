@@ -5,6 +5,10 @@ import org.jsoup.select.Elements;//Element;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Created by BinaryTree on 2016/11/16.
@@ -21,7 +25,8 @@ public class JsoupUnit {
         return doc.body().text();
     }
 
-    public String readQueries(File file) throws IOException {
+    public List<String[]> readQueries(File file) throws IOException {
+        List<String[]> keyList = new ArrayList<String[]>();
         if (file == null){
             System.err.println("NULL Document");
             return null;
@@ -29,14 +34,22 @@ public class JsoupUnit {
         doc = Jsoup.parse(file, "UTF-8");
         //Element h2Element = doc.ge;
         Elements h2Tags = doc.getElementsByTag("h2");
-        /**
-         * To get the queries
-         */
-        for (Element tmp : h2Tags){
-            System.out.println(tmp.ownText());
+        Elements keyWords = doc.getElementsByTag("dd");
+        for(int i = 0;i < keyWords.size();i += 2){
+            //System.out.println(keyWords.get(i).text());
+
+            keyList.add(keyWords.get(i).text().split("\\P{L}+"));
         }
 
-        return doc.body().text();
+        return  keyList;
+/*        *//**
+         * To get the queries
+         *//*
+        for (Element tmp : h2Tags){
+            //System.out.println(tmp.ownText());
+        }*/
+
+        //return doc.body().text();
     }
     public String ReadHtml(String url) throws IOException {
         File file = new File(url);
@@ -51,7 +64,12 @@ public class JsoupUnit {
         JsoupUnit jsoup = new JsoupUnit();
         try {
             File file = new File("target/classes/requetes.html");
-            System.out.println(jsoup.readQueries(file));
+            List<String[]> list = jsoup.readQueries(file);
+            for (String[] keywords:list) {
+                for (String word : keywords) {
+                    System.out.println(word);
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
