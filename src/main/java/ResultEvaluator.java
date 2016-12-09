@@ -6,6 +6,7 @@ import java.util.*;
  */
 public class ResultEvaluator {
     public String[] result;
+    private static final int NUMBER_DOC = 138;
 
     public List<Integer> evaluate() {
         List<Integer> sortedRes = new ArrayList<Integer>();
@@ -36,6 +37,8 @@ public class ResultEvaluator {
         return sortedRes;
     }
 
+
+
     public Map<String, Integer> parsePertinenceFile(File file) {
         Map<String, Integer> filePertinence = new LinkedHashMap<String, Integer>();
         try {
@@ -45,9 +48,15 @@ public class ResultEvaluator {
                 String[] values = line.split("\\s+");
                 filePertinence.put(values[0], Integer.parseInt(values[1]));
             }
+            for(int i = 1;i<= NUMBER_DOC;i++){
+                if(!filePertinence.containsKey("D"+i+".html")){
+                    filePertinence.put("D"+i+".html",Integer.valueOf(0));
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         /*
         Display the Map's data
         Set set = filePertinence.entrySet();
@@ -59,4 +68,13 @@ public class ResultEvaluator {
 */
         return filePertinence;
     }
+
+    public double funcionP(ArrayList<Integer> petrinence,int k){
+        int value = 0;
+        for(int i = 0;i < k; i++){
+            value += petrinence.get(i);
+        }
+        return value/k;
+    }
+
 }
