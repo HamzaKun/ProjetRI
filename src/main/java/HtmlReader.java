@@ -29,6 +29,8 @@ public class HtmlReader {
         return this.read(null,filePath);
     }
 
+    /** Add html content to known Map and return the new Map which including the whole content.
+     * */
     public Map<String,WordAttribute> read(Map<String,WordAttribute> map,String filePath) throws IOException {
         File file = new File(filePath);
         String fileName = file.getName();

@@ -1,7 +1,9 @@
 import java.util.HashMap;
 import java.util.Map;
 
-/**
+/** Word Module
+ * including total frequency, index.
+ * Index is a map, which including file name and frequency for each file.
  * Created by BinaryTree on 2016/11/25.
  */
 public class WordAttribute {
