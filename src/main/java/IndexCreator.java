@@ -64,6 +64,10 @@ public class IndexCreator {
 
     }
 
+    /**
+     * This function creates the vocabulary  , from the specified directory
+     * @return
+     */
     public IndexCreator createVocabulary() {
         FrenchStemmer frenchStemmer = new FrenchStemmer();
         File folder = new File("target/classes/corpus-utf8");
@@ -91,6 +95,9 @@ public class IndexCreator {
          */
     }
 
+    /**
+     * Fills the database, with the word & their frequencies
+     */
     public void fillDatabase() {
         /*try {
             DbConnect dbConnect = new DbConnect();

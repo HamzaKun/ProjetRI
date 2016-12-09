@@ -17,16 +17,10 @@ import java.util.regex.Pattern;
 public class Main {
 
     public static void main(String[] args) {
-        DbConnect dbConnect = new DbConnect();
-        IndexCreator indexCreator = new IndexCreator();
-        String query = "INSERT INTO RI.`vocabulaire`(`mot`, `frequence`) VALUES( ?, ?)";
-        indexCreator.createVocabulary().fillDatabase();
-        Set set = indexCreator.getVocabulary().entrySet();
-        Iterator i = set.iterator();
-        /*while (i.hasNext()) {
-            Map.Entry me = (Map.Entry) i.next();
-            System.out.println(me.getKey());
-        }*/
-        System.out.println("The size : " + indexCreator.getVocabulary().size());
+        System.out.println("Example if the result of our search engine");
+        ResultEvaluator resultEvaluator = new ResultEvaluator();
+        File file = new File("target/classes/qrels/qrelQ1.txt");
+        resultEvaluator.parsePertinenceFile(file);
+        resultEvaluator.evaluate();
     }
 }

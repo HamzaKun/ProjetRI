@@ -8,6 +8,11 @@ public class ResultEvaluator {
     public String[] result;
     private static final int NUMBER_DOC = 138;
 
+    /**
+     * Returns a sorted list -ascending frequency-
+     * that contains the pertinence of the document
+     * @return
+     */
     public List<Integer> evaluate() {
         List<Integer> sortedRes = new ArrayList<Integer>();
         List<Map<String, Integer>> queriesResult = null;
@@ -37,6 +42,11 @@ public class ResultEvaluator {
         return sortedRes;
     }
 
+    /**
+     * Returns a Map of document names, and pertinence values
+     * @param file
+     * @return
+     */
 
 
     public Map<String, Integer> parsePertinenceFile(File file) {

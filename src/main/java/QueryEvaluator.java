@@ -15,6 +15,13 @@ public class QueryEvaluator {
     private List<Map<String, Integer>> result;
     private static final int NUMBER_DOC = 138;
 
+    /**
+     * Return a map containing the documents & the frequency of the query words
+     * @param query
+     * @param connection
+     * @return
+     * @throws SQLException
+     */
     public Map<String, Integer> evaluteQuery(String[] query, Connection connection) throws SQLException {
         Map<String, Integer> queryResult = new LinkedHashMap<String, Integer>();
         for (String word : query) {
@@ -39,6 +46,11 @@ public class QueryEvaluator {
         return queryResult;
     }
 
+    /**
+     * Calls the queryEvaluator method and iterates through all the queries
+     * @param queries
+     * @return
+     */
     public List<Map<String, Integer>> evaluateQueries(List<String[]> queries) {
         try {
             DbConnect dbConnect = new DbConnect();
@@ -61,6 +73,13 @@ public class QueryEvaluator {
 
     }
 
+    /**
+     * Used to sort the Map using the word frequency
+     * @param map
+     * @param <K>
+     * @param <V>
+     * @return
+     */
     public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
         List<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>(map.entrySet());
         Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
