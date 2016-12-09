@@ -7,23 +7,25 @@ import java.util.*;
 public class ResultEvaluator {
     public String[] result;
 
-    public String evaluate() {
-        List<SortedMap<Integer, String>> queriesResult = null;
+    public List<Integer> evaluate() {
+        List<Integer> sortedRes = new ArrayList<Integer>();
+        List<SortedMap<String, Integer>> queriesResult = null;
         QueryEvaluator queryEvaluator = new QueryEvaluator();
         File file = new File("target/classes/requetes.html");
         JsoupUnit jsoup = new JsoupUnit();
         try {
             queriesResult = queryEvaluator.evaluateQueries(jsoup.readQueries(file));
             for(int i=0; i<queriesResult.size(); i++) {
-                File pertFile = new File("target/classes/qrels/qrelQ"+i+".txt");
-                Map<String, Integer> pertinence = parsePertinenceFile(pertFile);
-                Map<Integer, String> result = queriesResult.get(i);
+                File pertFile = new File("target/classes/qrels/qrelQ" + (i+1) + ".txt");
+                HashMap<String, Integer> pertinence = (HashMap) parsePertinenceFile(pertFile);
+                Map<String, Integer> result = queriesResult.get(i);
                 Set set = result.entrySet();
                 Iterator it = set.iterator();
                 while (it.hasNext()) {
                     Map.Entry entry = (Map.Entry)it.next();
                     System.out.println(entry.getKey() + ", " +entry.getValue());
-
+                    int r = pertinence.get(entry.getValue());
+                    sortedRes.add(pertinence.get(entry.getValue()));
                 }
             }
         } catch (IOException e) {

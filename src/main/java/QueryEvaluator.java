@@ -15,10 +15,10 @@ public class QueryEvaluator {
 
     private JsoupUnit jsoup;
     private String[] queries;
-    private List<SortedMap<Integer, String>> result;
+    private List<SortedMap<String, Integer>> result;
 
-    public SortedMap<Integer, String> evaluteQuery(String[] query, Connection connection) throws SQLException{
-        SortedMap<Integer, String> queryResult = new TreeMap<Integer, String>();
+    public SortedMap<String, Integer> evaluteQuery(String[] query, Connection connection) throws SQLException{
+        SortedMap<String, Integer> queryResult = new TreeMap<String, Integer>();
         for(String word : query) {
             String sqlQuery = "Select document, frequence from RI.`index` where RI.`index`.`mot` like '%" + word + "%'";//mot like '%"+ word +"%'";
             Statement stmt = connection.createStatement();
@@ -26,20 +26,20 @@ public class QueryEvaluator {
             while(rs.next()) {
                 String document = rs.getString("document");
                 int frequence = rs.getInt("frequence");
-                queryResult.put(frequence, document);
+                queryResult.put(document, frequence);
                 System.out.println("\t( " + document + ", " + frequence +")");
             }
             rs.close();
             stmt.close();
         }
-        return null;
+        return queryResult;
     }
 
-    public List<SortedMap<Integer, String>> evaluateQueries(List<String[]> queries) {
+    public List<SortedMap<String, Integer>> evaluateQueries(List<String[]> queries) {
         try {
             DbConnect dbConnect = new DbConnect();
             Connection connection = dbConnect.getConnection();
-            result = new ArrayList<SortedMap<Integer, String>>();
+            result = new ArrayList<SortedMap<String, Integer>>();
             int i=1;
             for(String[] query : queries) {
                 System.out.println("For the query :" + i++);
