@@ -2,25 +2,26 @@
  * Created by hamza on 16/11/16.
  */
 
-import org.tartarus.snowball.ext.FrenchStemmer;
-
-import java.beans.Statement;
-import java.io.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
         System.out.println("Example if the result of our search engine");
         ResultEvaluator resultEvaluator = new ResultEvaluator();
-        File file = new File("target/classes/qrels/qrelQ1.txt");
-        resultEvaluator.parsePertinenceFile(file);
-        resultEvaluator.evaluate();
+        ArrayList<List<Integer>> result = (ArrayList<List<Integer>>) resultEvaluator.evaluate();
+        double[][] P = new double[5][9];
+        double[][] R = new double[5][9];
+
+        for(int i = 0; i< 5 ; i++){
+            for(int j=0; j<9; j++) {
+                P[i][j] = resultEvaluator.P( (ArrayList<Integer>)result.get(j), 5*(i+1) );
+                R[i][j] = resultEvaluator.P( (ArrayList<Integer>)result.get(j), 5*(i+1) );
+                System.out.println("Pertinence P@" + 5*(i+1) + " : " + P[i][j]);
+                System.out.println("Rappel R@" + 5*(i+1) + " : " + R[i][j]);
+            }
+        }
+
     }
 }

@@ -13,8 +13,8 @@ public class ResultEvaluator {
      * that contains the pertinence of the document
      * @return
      */
-    public List<Integer> evaluate() {
-        List<Integer> sortedRes = new ArrayList<Integer>();
+    public List<List<Integer>> evaluate() {
+        List<List<Integer>> sortedRes = new ArrayList<List<Integer>>();
         List<Map<String, Integer>> queriesResult = null;
         QueryEvaluator queryEvaluator = new QueryEvaluator();
         File file = new File("target/classes/requetes.html");
@@ -22,18 +22,20 @@ public class ResultEvaluator {
         try {
             queriesResult = queryEvaluator.evaluateQueries(jsoup.readQueries(file));
             for(int i=0; i<queriesResult.size(); i++) {
-                System.out.println("\n\nFor the query "+ (i+1) + "\n\n");
+                ArrayList<Integer> resu = new ArrayList<Integer>();
+                //System.out.println("\n\nFor the query "+ (i+1) + "\n\n");
                 File pertFile = new File("target/classes/qrels/qrelQ" + (i+1) + ".txt");
                 LinkedHashMap<String, Integer> pertinence = (LinkedHashMap) parsePertinenceFile(pertFile);
-                System.out.println(pertinence);
+                //System.out.println(pertinence);
                 Map<String, Integer> result = queriesResult.get(i);
                 Set set = result.entrySet();
                 Iterator it = set.iterator();
                 while (it.hasNext()) {
                     Map.Entry entry = (Map.Entry)it.next();
-                    sortedRes.add(pertinence.get(entry.getKey()));
-                    System.out.println(entry.getKey() + ", " +entry.getValue() +", "+ pertinence.get(entry.getKey()));
+                    resu.add(pertinence.get(entry.getKey()));
+                    //System.out.println(entry.getKey() + ", " +entry.getValue() +", "+ pertinence.get(entry.getKey()));
                 }
+            sortedRes.add(resu);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -88,7 +90,7 @@ public class ResultEvaluator {
         for(int i = 0;i < k; i++){
             value += pertinence.get(i);
         }
-        return value/k;
+        return (double)value/k;
     }
     /** Funtion Pr
      * @param pertinence ArrayList of pertinence of each document which is already sorted
@@ -106,7 +108,7 @@ public class ResultEvaluator {
         for(int j = 0;j < k; j++){
             value += pertinence.get(j);
         }
-        return value/pertinenceTotal;
+        return (double)value/pertinenceTotal;
     }
 
 }
