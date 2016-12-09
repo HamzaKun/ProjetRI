@@ -12,11 +12,11 @@ public class QueryEvaluator {
 
     private JsoupUnit jsoup;
     private String[] queries;
-    private List<SortedMap<String, Integer>> result;
+    private List<Map<String, Integer>> result;
     private static final int NUMBER_DOC = 138;
 
-    public SortedMap<String, Integer> evaluteQuery(String[] query, Connection connection) throws SQLException {
-        SortedMap<String, Integer> queryResult = new TreeMap<String, Integer>();
+    public Map<String, Integer> evaluteQuery(String[] query, Connection connection) throws SQLException {
+        Map<String, Integer> queryResult = new LinkedHashMap<String, Integer>();
         for (String word : query) {
             String sqlQuery = "Select document, frequence from RI.`index` where RI.`index`.`mot` like '%" + word + "%'";//mot like '%"+ word +"%'";
             Statement stmt = connection.createStatement();
@@ -25,28 +25,28 @@ public class QueryEvaluator {
                 String document = rs.getString("document");
                 int frequence = rs.getInt("frequence");
                 queryResult.put(document, frequence);
-                System.out.println("\t( " + document + ", " + frequence + ")");
+                //System.out.println("\t( " + document + ", " + frequence + ")");
             }
             rs.close();
             stmt.close();
         }
         for(int i = 1;i<= NUMBER_DOC;i++){
-            if(!queryResult.containsKey("D"+i+".html"));{
+            if(!queryResult.containsKey("D"+i+".html")){
                 queryResult.put("D"+i+".html",Integer.valueOf(0));
             }
         }
-        queryResult = (SortedMap<String, Integer>) sortByValue(queryResult);
+        queryResult = (LinkedHashMap<String, Integer>) sortByValue(queryResult);
         return queryResult;
     }
 
-    public List<SortedMap<String, Integer>> evaluateQueries(List<String[]> queries) {
+    public List<Map<String, Integer>> evaluateQueries(List<String[]> queries) {
         try {
             DbConnect dbConnect = new DbConnect();
             Connection connection = dbConnect.getConnection();
-            result = new ArrayList<SortedMap<String, Integer>>();
+            result = new ArrayList<Map<String, Integer>>();
             int i = 1;
             for (String[] query : queries) {
-                System.out.println("For the query :" + i++);
+                //System.out.println("For the query :" + i++);
                 result.add(evaluteQuery(query, connection));
             }
             connection.close();
@@ -65,7 +65,7 @@ public class QueryEvaluator {
         List<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>(map.entrySet());
         Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
             public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
-                return (o1.getValue()).compareTo(o2.getValue());
+                return (o2.getValue()).compareTo(o1.getValue());
             }
         });
 
