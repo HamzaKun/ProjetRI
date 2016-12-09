@@ -27,7 +27,7 @@ public class QueryEvaluator {
                 String document = rs.getString("document");
                 int frequence = rs.getInt("frequence");
                 queryResult.put(frequence, document);
-                System.out.println("( " + document + ", " + frequence +")");
+                System.out.println("\t( " + document + ", " + frequence +")");
             }
             rs.close();
             stmt.close();
@@ -40,7 +40,9 @@ public class QueryEvaluator {
             DbConnect dbConnect = new DbConnect();
             Connection connection = dbConnect.getConnection();
             result = new ArrayList<SortedMap<Integer, String>>();
+            int i=1;
             for(String[] query : queries) {
+                System.out.println("For the query :" + i++);
                 result.add(evaluteQuery(query, connection));
             }
             connection.close();
