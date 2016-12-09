@@ -68,13 +68,35 @@ public class ResultEvaluator {
 */
         return filePertinence;
     }
-
-    public double funcionP(ArrayList<Integer> petrinence,int k){
+    /** Funtion P
+     * @param pertinence ArrayList of pertinence of each document which is already sorted
+     * @param k
+     * @return
+     * */
+    public double P(ArrayList<Integer> pertinence,int k){
         int value = 0;
         for(int i = 0;i < k; i++){
-            value += petrinence.get(i);
+            value += pertinence.get(i);
         }
         return value/k;
+    }
+    /** Funtion Pr
+     * @param pertinence ArrayList of pertinence of each document which is already sorted
+     * @param query Sorted LinkedHashMap including the name of document and pertinence
+     * @param k
+     * @return
+     * */
+    public double Pr(ArrayList<Integer> pertinence,LinkedHashMap<String, Integer> query,int k){
+        int pertinenceTotal = 0,value = 0;
+        Iterator i = query.entrySet().iterator();
+        while (i.hasNext()) {
+            Map.Entry entry = (Map.Entry)i.next();
+            pertinenceTotal += (Integer) entry.getValue();
+        }
+        for(int j = 0;j < k; j++){
+            value += pertinence.get(j);
+        }
+        return value/pertinenceTotal;
     }
 
 }

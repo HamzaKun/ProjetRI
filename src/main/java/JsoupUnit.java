@@ -14,6 +14,8 @@ import java.util.List;
 public class JsoupUnit {
     Document doc;
 
+    /**Read html content from File
+     * */
     public String ReadHtml(File file) throws IOException {
         if(file == null){
             System.out.println("NULL Document");
@@ -23,6 +25,8 @@ public class JsoupUnit {
         return doc.body().text();
     }
 
+    /**Read content from requetes.html
+     * */
     public List<String[]> readQueries(File file) throws IOException {
         List<String[]> keyList = new ArrayList<String[]>();
         if (file == null){
@@ -48,7 +52,8 @@ public class JsoupUnit {
 
         return  keyList;
     }
-
+    /**Read html content from File path string
+     * */
     public String ReadHtml(String url) throws IOException {
         File file = new File(url);
         if(file == null){
