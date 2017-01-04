@@ -17,9 +17,9 @@ public class Main {
         for(int i = 0; i< 5 ; i++){
             for(int j=0; j<9; j++) {
                 P[i][j] = resultEvaluator.P( (ArrayList<Integer>)result.get(j), 5*(i+1) );
-                R[i][j] = resultEvaluator.P( (ArrayList<Integer>)result.get(j), 5*(i+1) );
-                System.out.println("Pertinence P@" + 5*(i+1) + " : " + P[i][j]);
-                System.out.println("Rappel R@" + 5*(i+1) + " : " + R[i][j]);
+                R[i][j] = resultEvaluator.Pr( (ArrayList<Integer>)result.get(j), resultEvaluator.getPertinence(), 5*(i+1));
+                System.out.println( 5*(i+1) + " " + P[i][j]);
+                System.out.println( 5*(i+1) + " " + R[i][j]);
             }
         }
 

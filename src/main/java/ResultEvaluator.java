@@ -7,6 +7,7 @@ import java.util.*;
 public class ResultEvaluator {
     public String[] result;
     private static final int NUMBER_DOC = 138;
+    LinkedHashMap<String, Integer> pertinence;
 
     /**
      * Returns a sorted list -ascending frequency-
@@ -25,7 +26,7 @@ public class ResultEvaluator {
                 ArrayList<Integer> resu = new ArrayList<Integer>();
                 //System.out.println("\n\nFor the query "+ (i+1) + "\n\n");
                 File pertFile = new File("target/classes/qrels/qrelQ" + (i+1) + ".txt");
-                LinkedHashMap<String, Integer> pertinence = (LinkedHashMap) parsePertinenceFile(pertFile);
+                pertinence = (LinkedHashMap) parsePertinenceFile(pertFile);
                 //System.out.println(pertinence);
                 Map<String, Integer> result = queriesResult.get(i);
                 Set set = result.entrySet();
@@ -111,4 +112,11 @@ public class ResultEvaluator {
         return (double)value/pertinenceTotal;
     }
 
+    public LinkedHashMap<String, Integer> getPertinence() {
+        return pertinence;
+    }
+
+    public void setPertinence(LinkedHashMap<String, Integer> pertinence) {
+        this.pertinence = pertinence;
+    }
 }
