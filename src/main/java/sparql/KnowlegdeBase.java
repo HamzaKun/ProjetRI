@@ -10,13 +10,35 @@ import java.util.Map;
 public class KnowlegdeBase {
     private static SparqlClient sparqlClient = new SparqlClient("localhost:3030/ProjetRI");
 
-    //TODO: changing the dataset's name
-    public void setSparqlClient() {
-        this.sparqlClient =  new SparqlClient("localhost:3030/ribase");
+    // TODO: 2017/1/11 change database name 
+    public KnowlegdeBase() {
+        this.sparqlClient = new SparqlClient("localhost:3030/ribase");
     }
-    ArrayList<String> findSynonym(String word){
-        
-        return null;
+
+    /**
+     * Find known word's synonyms.
+     * @return List of String. All synonyms finded.
+     * */
+    ArrayList<String> findSynonym(String word) {
+        ArrayList<String> synonyms = new ArrayList<String>();
+        String query = "prefix owl: <http://www.w3.org/2002/07/owl#>\n"
+                + "prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
+                + "SELECT ?labels WHERE\n"
+                + "{\n"
+                + "    ?ressource rdfs:label ?mot.\n"
+                + "  ?ressource rdfs:label ?labels\n"
+                + "  FILTER(?mot = \"" + word + "\" || ?mot = \""+ word+"\"@fr || ?mot = \"" + word + "\"@en)\n"
+                + "}\n";
+        Iterable<Map<String, String>> prix = sparqlClient.select(query);
+        for(Map<String,String> res:prix){
+            synonyms.add(res.get("labels"));
+        }
+        System.out.println("test");
+        return synonyms;
+    }
+
+    public static void main(String[] args) {
+        new KnowlegdeBase().findSynonym("prix");
     }
 
     public List<String> findRelation(String word1, String word2) {
@@ -45,13 +67,4 @@ public class KnowlegdeBase {
         return relations;
     }
 
-    public static void main(String[] args) {
-        String word1 = "Omar Sy";
-        String word2 = "lieu naissance";
-        //System.out.println("executing the query:" + "\n" + query);
-        KnowlegdeBase knowlegdeBase = new KnowlegdeBase();
-
-        //System.out.println("Finding the relations between" + word1 + ", and " + word2);
-        knowlegdeBase.findRelation(word1, word2);
-    }
 }
