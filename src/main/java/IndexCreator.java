@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
  */
 public class IndexCreator {
 
+    //TODO: maybe adding the word location in the document
     Map<String, WordAttribute> vocabulary;
 
     public Map<String, WordAttribute> getVocabulary() {
