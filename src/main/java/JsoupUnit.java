@@ -56,6 +56,12 @@ public class JsoupUnit {
         return  keyList;
     }
 
+    /**
+     * Gives the relation between the query words.
+     * @param file
+     * @return
+     * @throws IOException
+     */
     public List<String[]> readQueriesRelations(File file) throws IOException {
         List<String[]> keyList = new ArrayList<String[]>();
         if (file == null){
@@ -85,7 +91,7 @@ public class JsoupUnit {
 
     public static void main(String[] args) {
         try {
-            List<String[]> list = new JsoupUnit().readQueriesRelations(new File("target/classes/requetes.html"));
+            List<String[]> list = new JsoupUnit().readQueriesRelations(new File("target/classes/requetes_2.html"));
             new JsoupUnit().readQueryRI(new File("target/classes/requetes_2.html"));
         } catch (IOException e) {
             e.printStackTrace();

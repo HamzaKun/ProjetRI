@@ -31,8 +31,12 @@ public class QueryEvaluator {
             while (rs.next()) {
                 String document = rs.getString("document");
                 int frequence = rs.getInt("frequence");
-                queryResult.put(document, frequence);
-                //System.out.println("\t( " + document + ", " + frequence + ")");
+                if ( queryResult.get(document) == null ) {
+                    queryResult.put(document, frequence);
+                }else {
+                    queryResult.put(document, queryResult.get(document) + frequence);
+                }
+                //System.out.println("\t( " + document + ", " + frequence + ")" + word);
             }
             rs.close();
             stmt.close();
