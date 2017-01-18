@@ -7,6 +7,8 @@ import sparql.KnowlegdeBase;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -86,6 +88,46 @@ public class JsoupUnit {
             e.printStackTrace();
         }
     }
+
+    /**Read content from requetes.html
+     * for knowledge base. using different split method and don't stem words
+     * */
+
+    public List<String[]> readQueryRI(File file) throws IOException {
+        List<String[]> keyList = new ArrayList<String[]>();
+        if (file == null){
+            System.err.println("NULL Document");
+            return null;
+        }
+        doc = Jsoup.parse(file, "UTF-8");
+        Elements keyWords = doc.getElementsByTag("dd");
+        for(int i = 0;i < keyWords.size();i += 2){
+            ArrayList<String> res = new ArrayList<String>();
+            //Split word by ", "
+            String[] words = keyWords.get(i).text().split(", ");
+            //add Synonyms for each words
+            KnowledgeBase knowledgeBase = new KnowledgeBase();
+            for(String word:words){
+                ArrayList<String> synonyms = knowledgeBase.findSynonym(word);
+                if(synonyms.size() == 0){
+                    res.add(word);
+                }else{
+                    res.addAll(synonyms);
+                }
+            }
+            String[] result = res.toArray(new String[res.size()]);
+            keyList.add(result);
+        }
+
+        return  keyList;
+    }
+
+/*    public static void main(String[] args) throws IOException {
+        new JsoupUnit().readQueryRI(new File("target/classes/requetes.html"));
+    }*/
+
+
+
     /**Read html content from File path string
      * */
     public String ReadHtml(String url) throws IOException {
