@@ -7,11 +7,11 @@ import java.util.Map;
 /**
  * Created by BinaryTree on 2017/1/11.
  */
-public class KnowlegdeBase {
+public class KnowledgeBase {
     private static SparqlClient sparqlClient = new SparqlClient("localhost:3030/ProjetRI");
 
-    // TODO: 2017/1/11 change database name 
-    public KnowlegdeBase() {
+    // TODO: 2017/1/11 change database name
+    public KnowledgeBase() {
         this.sparqlClient = new SparqlClient("localhost:3030/ribase");
     }
 
@@ -19,11 +19,11 @@ public class KnowlegdeBase {
      * Find known word's synonyms.
      * @return List of String. All synonyms finded.
      * */
-    ArrayList<String> findSynonym(String word) {
+    public ArrayList<String> findSynonym(String word) {
         ArrayList<String> synonyms = new ArrayList<String>();
         String query = "prefix owl: <http://www.w3.org/2002/07/owl#>\n"
                 + "prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
-                + "SELECT ?labels WHERE\n"
+                + "SELECT DISTINCT ?labels WHERE\n"
                 + "{\n"
                 + "    ?ressource rdfs:label ?mot.\n"
                 + "  ?ressource rdfs:label ?labels\n"
@@ -38,7 +38,7 @@ public class KnowlegdeBase {
     }
 
     public static void main(String[] args) {
-        new KnowlegdeBase().findSynonym("prix");
+        new KnowledgeBase().findSynonym("prix");
     }
 
     public List<String> findRelation(String word1, String word2) {
