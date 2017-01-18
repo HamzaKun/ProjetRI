@@ -86,6 +86,7 @@ public class JsoupUnit {
     public static void main(String[] args) {
         try {
             List<String[]> list = new JsoupUnit().readQueriesRelations(new File("target/classes/requetes.html"));
+            new JsoupUnit().readQueryRI(new File("target/classes/requetes_2.html"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -125,11 +126,6 @@ public class JsoupUnit {
         }
         return  keyList;
     }
-
-    public static void main(String[] args) throws IOException {
-        new JsoupUnit().readQueryRI(new File("target/classes/requetes_2.html"));
-    }
-
 
 
     /**Read html content from File path string
