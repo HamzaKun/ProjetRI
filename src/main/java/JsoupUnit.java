@@ -117,16 +117,18 @@ public class JsoupUnit {
                     res.addAll(synonyms);
                 }
             }
-            String[] result = res.toArray(new String[res.size()]);
+
+            String temp = res.toString().replace("[","");
+            String[] result = temp.split("[^\\p{L}\\d]+");
+
             keyList.add(result);
         }
-
         return  keyList;
     }
 
-/*    public static void main(String[] args) throws IOException {
-        new JsoupUnit().readQueryRI(new File("target/classes/requetes.html"));
-    }*/
+    public static void main(String[] args) throws IOException {
+        new JsoupUnit().readQueryRI(new File("target/classes/requetes_2.html"));
+    }
 
 
 
