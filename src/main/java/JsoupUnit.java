@@ -2,6 +2,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.tartarus.snowball.ext.FrenchStemmer;
+import sparql.KnowlegdeBase;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,6 +52,39 @@ public class JsoupUnit {
         }
 
         return  keyList;
+    }
+
+    public List<String[]> readQueriesRelations(File file) throws IOException {
+        List<String[]> keyList = new ArrayList<String[]>();
+        if (file == null){
+            System.err.println("NULL Document");
+            return null;
+        }
+        doc = Jsoup.parse(file, "UTF-8");
+        Elements keyWords = doc.getElementsByTag("dd");
+        for(int i = 0;i < keyWords.size();i += 2){
+            //We stem the words before adding them to the query list
+            FrenchStemmer frenchStemmer = new FrenchStemmer();
+            String[] words = keyWords.get(i).text().split(", ");
+            KnowlegdeBase knowlegdeBase = new KnowlegdeBase();
+            List<String> relation = new ArrayList<String>();
+            for(int k=0; k< words.length-1 ; k++) {
+                ArrayList<String> rel = knowlegdeBase.findRelation(words[k], words[k+1])
+                String[] arrRel = new String[rel.size()];
+                arrRel = rel.toArray(arrRel);
+            }
+            keyList.add(stemmedWords);
+        }
+
+        return  keyList;
+    }
+
+    public static void main(String[] args) {
+        try {
+            List<String[]> list = new JsoupUnit().readQueriesRelations(new File("target/classes/requetes.html"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     /**Read html content from File path string
      * */

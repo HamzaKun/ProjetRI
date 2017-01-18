@@ -10,7 +10,6 @@ import java.util.Map;
 public class KnowlegdeBase {
     private static SparqlClient sparqlClient = new SparqlClient("localhost:3030/ProjetRI");
 
-    // TODO: 2017/1/11 change database name 
     public KnowlegdeBase() {
         this.sparqlClient = new SparqlClient("localhost:3030/ribase");
     }
@@ -33,12 +32,13 @@ public class KnowlegdeBase {
         for(Map<String,String> res:prix){
             synonyms.add(res.get("labels"));
         }
-        System.out.println("test");
+        System.out.println(synonyms);
         return synonyms;
     }
 
     public static void main(String[] args) {
         new KnowlegdeBase().findSynonym("prix");
+        new KnowlegdeBase().findRelation("Omar Sy", "lieu naissance");
     }
 
     public List<String> findRelation(String word1, String word2) {
