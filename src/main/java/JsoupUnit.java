@@ -2,7 +2,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.tartarus.snowball.ext.FrenchStemmer;
-import sparql.KnowlegdeBase;
+import sparql.KnowledgeBase;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,18 +64,20 @@ public class JsoupUnit {
         }
         doc = Jsoup.parse(file, "UTF-8");
         Elements keyWords = doc.getElementsByTag("dd");
+        KnowledgeBase knowlegdeBase = new KnowledgeBase();
         for(int i = 0;i < keyWords.size();i += 2){
-            //We stem the words before adding them to the query list
-            FrenchStemmer frenchStemmer = new FrenchStemmer();
             String[] words = keyWords.get(i).text().split(", ");
-            KnowlegdeBase knowlegdeBase = new KnowlegdeBase();
             List<String> relation = new ArrayList<String>();
             for(int k=0; k< words.length-1 ; k++) {
-                ArrayList<String> rel = knowlegdeBase.findRelation(words[k], words[k+1])
-                String[] arrRel = new String[rel.size()];
-                arrRel = rel.toArray(arrRel);
+                relation.add(words[k]);
+                ArrayList<String> results = (ArrayList<String>) knowlegdeBase.findRelation(words[k], words[k+1]);
+                relation.addAll(results);
+                if ( k == words.length - 2)
+                    relation.add(words[k+1]);
             }
-            keyList.add(stemmedWords);
+            String[] arrRel = new String[relation.size()];
+            arrRel = relation.toArray(arrRel);
+            keyList.add(arrRel);
         }
 
         return  keyList;

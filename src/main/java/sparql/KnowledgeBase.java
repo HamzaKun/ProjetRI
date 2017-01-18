@@ -63,7 +63,7 @@ public class KnowledgeBase {
         for (Map<String, String> result : results) {
             relations.add(result.get("label"));
         }
-        System.out.println(relations);
+        //System.out.println(relations);
         return relations;
     }
 
