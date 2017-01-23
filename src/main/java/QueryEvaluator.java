@@ -116,6 +116,11 @@ public class QueryEvaluator {
         return result;
     }
 
+    /**
+     * 
+     * @param queries Represents the un-stemmed queries
+     * @return
+     */
     public List<Map<String, Integer>> evaluateSemanticQueries(List<String[]> queries) {
         try {
             DbConnect dbConnect = new DbConnect();
@@ -127,9 +132,30 @@ public class QueryEvaluator {
                 ArrayList<String> addTerms = new ArrayList<String>(Arrays.asList(query));
                 for (int j = 0; j < query.length; j++) {
                     //In this method we need unstemmed words to get the semantic enrichment
-                    addTerms.addAll(knowledgeBase.findSynonym(query[j]));
+                    ArrayList<String> synonyms = knowledgeBase.findSynonym(query[j]);
+                    //Removing the redundant terms
+                    for (int i = 0; i < synonyms.size(); i++) {
+                        if ( !query[j].contains(synonyms.get(i)) ) {
+                            addTerms.add(synonyms.get(i));
+                        }
+                    }
                 }
-                String [] enrichedQuery = addTerms.toArray(new String[0]);
+                List<String> tmp = new ArrayList<String>();
+                //Map<String, Integer> tmp = new HashMap<String, Integer>();
+                //We enrich it even more using the knowledgeBase find relations
+                for (int i = 0; i < addTerms.size() - 1; i++) {
+                    ArrayList<String> results = (ArrayList<String>) knowledgeBase.findRelation(
+                            addTerms.get(i), addTerms.get(i+1));
+                    tmp.addAll(addTerms);
+                    if ( i == addTerms.size() - 2)
+                        tmp.add(addTerms.get(addTerms.size() - 1));
+                    for (String res :
+                            results) {
+                        if ( !tmp.contains(res) )
+                            tmp.add(res);
+                    }
+                }
+                String [] enrichedQuery = tmp.toArray(new String[0]);
                 //Remove les redundant terms ??????
                 result.add(evaluateQueryNormalised(enrichedQuery, connection));
             }
