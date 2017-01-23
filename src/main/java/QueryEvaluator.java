@@ -25,7 +25,7 @@ public class QueryEvaluator {
     public Map<String, Integer> evaluteQuery(String[] query, Connection connection) throws SQLException {
         Map<String, Integer> queryResult = new LinkedHashMap<String, Integer>();
         for (String word : query) {
-            String sqlQuery = "Select document, frequence from RI.`index` where RI.`index`.`mot` like '%" + word + "%'";//mot like '%"+ word +"%'";
+            String sqlQuery = "Select document, frequence from `index` where `index`.`mot` like '%" + word + "%'";//mot like '%"+ word +"%'";
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(sqlQuery);
             while (rs.next()) {
@@ -49,11 +49,45 @@ public class QueryEvaluator {
         queryResult = (LinkedHashMap<String, Integer>) sortByValue(queryResult);
         return queryResult;
     }
+    public Map<String, Integer> evaluteQueryNormalised(String[] query, Connection connection) throws SQLException {
+        String tfMaxQuery = "select max(frequence) from `index`";
+        Statement statementTfMax = connection.createStatement();
+        ResultSet resultSet = statementTfMax.executeQuery(tfMaxQuery);
+        int tfMax = 1;
+        while (resultSet.next()) {
+            tfMax = resultSet.getInt(1);
+        }
+        Map<String, Integer> queryResult = new LinkedHashMap<String, Integer>();
+        for (String word : query) {
+
+            String sqlQuery = "Select document, frequence from `index` where `index`.`mot` like '%" + word + "%'";//mot like '%"+ word +"%'";
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlQuery);
+            while (rs.next()) {
+                String document = rs.getString("document");
+                int frequence = rs.getInt("frequence");
+                if ( queryResult.get(document) == null ) {
+                    queryResult.put(document, (frequence/tfMax));
+                }else {
+                    queryResult.put(document, queryResult.get(document) + (frequence/tfMax) );
+                }
+            }
+            rs.close();
+            stmt.close();
+        }
+        for(int i = 1;i<= NUMBER_DOC;i++){
+            if(!queryResult.containsKey("D"+i+".html")){
+                queryResult.put("D"+i+".html",Integer.valueOf(0));
+            }
+        }
+        queryResult = (LinkedHashMap<String, Integer>) sortByValue(queryResult);
+        return queryResult;
+    }
 
     /**
      * Calls the queryEvaluator method and iterates through all the queries
      * @param queries
-     * @return
+     * @return a list, for each query a sorted map of the document and it's pertinence
      */
     public List<Map<String, Integer>> evaluateQueries(List<String[]> queries) {
         try {
@@ -63,7 +97,7 @@ public class QueryEvaluator {
             int i = 1;
             for (String[] query : queries) {
                 //System.out.println("For the query :" + i++);
-                result.add(evaluteQuery(query, connection));
+                result.add(evaluteQueryNormalised(query, connection));
             }
             connection.close();
         } catch (SQLException e) {
