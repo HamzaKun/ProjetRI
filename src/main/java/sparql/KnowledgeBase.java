@@ -10,7 +10,6 @@ import java.util.Map;
 public class KnowledgeBase {
     private static SparqlClient sparqlClient = new SparqlClient("localhost:3030/ProjetRI");
 
-    // TODO: 2017/1/11 change database name
     public KnowledgeBase() {
         this.sparqlClient = new SparqlClient("localhost:3030/ribase");
     }
@@ -30,10 +29,11 @@ public class KnowledgeBase {
                 + "  FILTER(?mot = \"" + word + "\" || ?mot = \""+ word+"\"@fr || ?mot = \"" + word + "\"@en)\n"
                 + "}\n";
         Iterable<Map<String, String>> prix = sparqlClient.select(query);
+        //Here We should remove stop words and stem
         for(Map<String,String> res:prix){
             synonyms.add(res.get("labels"));
         }
-        System.out.println("test");
+        //System.out.println("test");
         return synonyms;
     }
 

@@ -28,9 +28,14 @@ public class JsoupUnit {
         return doc.body().text();
     }
 
-    /**Read content from requetes.html
-     * */
-    public List<String[]> readQueries(File file) throws IOException {
+    /**
+     * Read content from requetes.html
+     * @param file
+     * @param stemmed TRUE : return stemmed words, False : return un-stemmed queries
+     * @return
+     * @throws IOException
+     */
+    public List<String[]> readQueries(File file, boolean stemmed) throws IOException {
         List<String[]> keyList = new ArrayList<String[]>();
         if (file == null){
             System.err.println("NULL Document");
@@ -40,17 +45,21 @@ public class JsoupUnit {
         Elements keyWords = doc.getElementsByTag("dd");
         for(int i = 0;i < keyWords.size();i += 2){
             //We stem the words before adding them to the query list
-            FrenchStemmer frenchStemmer = new FrenchStemmer();
             String[] words = keyWords.get(i).text().split("[^\\p{L}\\d]+");
-            String[] stemmedWords = new String[words.length];
-            int j=0;
-            for(String word : words) {
-                frenchStemmer.setCurrent(word);
-                frenchStemmer.stem();
-                stemmedWords[j] = frenchStemmer.getCurrent();
-                ++j;
+            if (stemmed) {
+                FrenchStemmer frenchStemmer = new FrenchStemmer();
+                String[] stemmedWords = new String[words.length];
+                int j=0;
+                for(String word : words) {
+                    frenchStemmer.setCurrent(word);
+                    frenchStemmer.stem();
+                    stemmedWords[j] = frenchStemmer.getCurrent();
+                    ++j;
+                }
+                keyList.add(stemmedWords);
+            } else {
+                keyList.add(words);
             }
-            keyList.add(stemmedWords);
         }
 
         return  keyList;

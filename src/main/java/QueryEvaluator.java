@@ -1,3 +1,4 @@
+import sparql.KnowledgeBase;
 import java.sql.Statement;
 import java.io.File;
 import java.sql.Connection;
@@ -14,6 +15,7 @@ public class QueryEvaluator {
     private String[] queries;
     private List<Map<String, Integer>> result;
     private static final int NUMBER_DOC = 138;
+    private KnowledgeBase knowledgeBase;
 
     /**
      * Return a map containing the documents & the frequency of the query words
@@ -22,7 +24,7 @@ public class QueryEvaluator {
      * @return
      * @throws SQLException
      */
-    public Map<String, Integer> evaluteQuery(String[] query, Connection connection) throws SQLException {
+    public Map<String, Integer> evaluateQuery(String[] query, Connection connection) throws SQLException {
         Map<String, Integer> queryResult = new LinkedHashMap<String, Integer>();
         for (String word : query) {
             String sqlQuery = "Select document, frequence from `index` where `index`.`mot` like '%" + word + "%'";//mot like '%"+ word +"%'";
@@ -49,7 +51,15 @@ public class QueryEvaluator {
         queryResult = (LinkedHashMap<String, Integer>) sortByValue(queryResult);
         return queryResult;
     }
-    public Map<String, Integer> evaluteQueryNormalised(String[] query, Connection connection) throws SQLException {
+
+    /**
+     * Same as evaluate query, but we only use the normal method of calculating the weighting of the words
+     * @param query
+     * @param connection
+     * @return
+     * @throws SQLException
+     */
+    public Map<String, Integer> evaluateQueryNormalised(String[] query, Connection connection) throws SQLException {
         String tfMaxQuery = "select max(frequence) from `index`";
         Statement statementTfMax = connection.createStatement();
         ResultSet resultSet = statementTfMax.executeQuery(tfMaxQuery);
@@ -59,7 +69,6 @@ public class QueryEvaluator {
         }
         Map<String, Integer> queryResult = new LinkedHashMap<String, Integer>();
         for (String word : query) {
-
             String sqlQuery = "Select document, frequence from `index` where `index`.`mot` like '%" + word + "%'";//mot like '%"+ word +"%'";
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(sqlQuery);
@@ -97,7 +106,32 @@ public class QueryEvaluator {
             int i = 1;
             for (String[] query : queries) {
                 //System.out.println("For the query :" + i++);
-                result.add(evaluteQueryNormalised(query, connection));
+                result.add(evaluateQuery(query, connection));
+                //result.add(evaluateQueryNormalised(query, connection));
+            }
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public List<Map<String, Integer>> evaluateSemanticQueries(List<String[]> queries) {
+        try {
+            DbConnect dbConnect = new DbConnect();
+            Connection connection = dbConnect.getConnection();
+            result = new ArrayList<Map<String, Integer>>();
+            knowledgeBase = new KnowledgeBase();
+            for (String[] query : queries) {
+                //System.out.println("For the query :" + i++);
+                ArrayList<String> addTerms = new ArrayList<String>(Arrays.asList(query));
+                for (int j = 0; j < query.length; j++) {
+                    //In this method we need unstemmed words to get the semantic enrichment
+                    addTerms.addAll(knowledgeBase.findSynonym(query[j]));
+                }
+                String [] enrichedQuery = addTerms.toArray(new String[0]);
+                //Remove les redundant terms ??????
+                result.add(evaluateQueryNormalised(enrichedQuery, connection));
             }
             connection.close();
         } catch (SQLException e) {

@@ -18,10 +18,11 @@ public class ResultEvaluator {
         List<List<Integer>> sortedRes = new ArrayList<List<Integer>>();
         List<Map<String, Integer>> queriesResult = null;
         QueryEvaluator queryEvaluator = new QueryEvaluator();
-        File file = new File("target/classes/requetes.html");
+        File file = new File("target/classes/requetes_2.html");
         JsoupUnit jsoup = new JsoupUnit();
         try {
-            queriesResult = queryEvaluator.evaluateQueries(jsoup.readQueries(file));
+            queriesResult = queryEvaluator.evaluateSemanticQueries(jsoup.readQueries(file, false));
+//            queriesResult = queryEvaluator.evaluateQueries(jsoup.readQueries(file, true));
             for(int i=0; i<queriesResult.size(); i++) {
                 ArrayList<Integer> resu = new ArrayList<Integer>();
                 //System.out.println("\n\nFor the query "+ (i+1) + "\n\n");
