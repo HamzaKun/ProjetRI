@@ -2,14 +2,21 @@
  * Created by hamza on 16/11/16.
  */
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         ResultEvaluator resultEvaluator = new ResultEvaluator();
+        //Specify whether use normalised search or not. TF/TFmax or TF
+        resultEvaluator.setNormalisation(false);
+        //Specify use which as enrich method Synonyms/Relation/Both
+        resultEvaluator.setType(QueryEvaluator.ANALYSE_TYPE.SYNONYMS);
         ArrayList<List<Integer>> result = (ArrayList<List<Integer>>) resultEvaluator.evaluate();
+
+//        ArrayList<List<Integer>> result = (ArrayList<List<Integer>>) resultEvaluator.evaluateNative();
         double[][] P = new double[5][11];
         double[][] R = new double[5][11];
 

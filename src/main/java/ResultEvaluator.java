@@ -1,4 +1,7 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -8,41 +11,81 @@ public class ResultEvaluator {
     public String[] result;
     private static final int NUMBER_DOC = 138;
     LinkedHashMap<String, Integer> pertinence;
+    //parameter for specify normalisation true = TF/TFmax false = TF
+    private  boolean normalisation;
+    private QueryEvaluator.ANALYSE_TYPE type;
+    public boolean isNormalisation() {
+        return normalisation;
+    }
+
+    public void setNormalisation(boolean normalisation) {
+        this.normalisation = normalisation;
+    }
+
 
     /**
      * Returns a sorted list -ascending frequency-
      * that contains the pertinence of the document
      * @return
      */
-    public List<List<Integer>> evaluate() {
+    public List<List<Integer>> evaluate() throws IOException {
         List<List<Integer>> sortedRes = new ArrayList<List<Integer>>();
         List<Map<String, Float>> queriesResult = null;
         QueryEvaluator queryEvaluator = new QueryEvaluator();
+        queryEvaluator.setNormal(this.normalisation);
+        queryEvaluator.setType(this.type);
         File file = new File("target/classes/requetes_2.html");
         JsoupUnit jsoup = new JsoupUnit();
-        try {
-            queriesResult = queryEvaluator.evaluateSemanticQueries(jsoup.readQueries(file, false));
-//            queriesResult = queryEvaluator.evaluateQueries(jsoup.readQueries(file, true));
-            for(int i=0; i<queriesResult.size(); i++) {
-                ArrayList<Integer> resu = new ArrayList<Integer>();
-                //System.out.println("\n\nFor the query "+ (i+1) + "\n\n");
-                File pertFile = new File("target/classes/qrels/qrelQ" + (i+1) + ".txt");
-                pertinence = (LinkedHashMap) parsePertinenceFile(pertFile);
-                //System.out.println(pertinence);
-                Map<String, Float> result = queriesResult.get(i);
-                Set set = result.entrySet();
-                Iterator it = set.iterator();
-                while (it.hasNext()) {
-                    Map.Entry entry = (Map.Entry)it.next();
-                    resu.add(pertinence.get(entry.getKey()));
-                    //System.out.println(entry.getKey() + ", " +entry.getValue() +", "+ pertinence.get(entry.getKey()));
-                }
-            sortedRes.add(resu);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
+          //  queriesResult = queryEvaluator.evaluateSemanticQueries(jsoup.readQueryRI(file));
+                  queriesResult = queryEvaluator.evaluateSemanticQueries(jsoup.readQueries(file, false, JsoupUnit.TYPE.TYPE_SEMANTIC));
+
+//            queriesResult = queryEvaluator.evaluateQueries(jsoup.readQueries(file, true));
+            sortedRes = temp(queriesResult);
+
+        return sortedRes;
+    }
+    /**
+     * Returns a sorted list -ascending frequency-
+     * that contains the pertinence of the document
+     * @return
+     */
+    public List<List<Integer>> evaluateNative() throws IOException {
+        List<List<Integer>> sortedRes = new ArrayList<List<Integer>>();
+        List<Map<String, Float>> queriesResult = null;
+        QueryEvaluator queryEvaluator = new QueryEvaluator();
+        queryEvaluator.setType(this.type);
+        queryEvaluator.setNormal(this.isNormalisation());
+        File file = new File("target/classes/requetes_2.html");
+        JsoupUnit jsoup = new JsoupUnit();
+
+            queriesResult = queryEvaluator.evaluateQueries(jsoup.readQueries(file, true, JsoupUnit.TYPE.TPYE_NORMAL));
+//            queriesResult = queryEvaluator.evaluateQueries(jsoup.readQueries(file, true));
+
+                sortedRes = temp(queriesResult);
+        return sortedRes;
+    }
+
+    List<List<Integer>> temp(List<Map<String, Float>> queriesResult)
+
+    {
+        List<List<Integer>> sortedRes = new ArrayList<List<Integer>>();
+        for (int i = 0; i < queriesResult.size(); i++) {
+            ArrayList<Integer> resu = new ArrayList<Integer>();
+            //System.out.println("\n\nFor the query "+ (i+1) + "\n\n");
+            File pertFile = new File("target/classes/qrels/qrelQ" + (i + 1) + ".txt");
+            pertinence = (LinkedHashMap) parsePertinenceFile(pertFile);
+            //System.out.println(pertinence);
+            Map<String, Float> result = queriesResult.get(i);
+            Set set = result.entrySet();
+            Iterator it = set.iterator();
+            while (it.hasNext()) {
+                Map.Entry entry = (Map.Entry) it.next();
+                resu.add(pertinence.get(entry.getKey()));
+                //System.out.println(entry.getKey() + ", " +entry.getValue() +", "+ pertinence.get(entry.getKey()));
+            }
+            sortedRes.add(resu);
+        }
         return sortedRes;
     }
 
@@ -119,5 +162,13 @@ public class ResultEvaluator {
 
     public void setPertinence(LinkedHashMap<String, Integer> pertinence) {
         this.pertinence = pertinence;
+    }
+
+    public QueryEvaluator.ANALYSE_TYPE getType() {
+        return type;
+    }
+
+    public void setType(QueryEvaluator.ANALYSE_TYPE type) {
+        this.type = type;
     }
 }
