@@ -5,8 +5,8 @@ import java.sql.*;
  */
 public class DbConnect {
     // JDBC driver name and database URL
-    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost:3306/RI";
+    static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
+    static final String DB_URL = "jdbc:mysql://localhost:3306/RI1?serverTimezone=UTC";
 
     //  Database credentials
     static final String USER = "RI";

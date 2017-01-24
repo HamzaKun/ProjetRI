@@ -11,6 +11,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="lib" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.jena:jena-fuseki-server:2.4.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.jena:jena-fuseki-war:war:2.4.1" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.21" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-core:6.3.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-analyzers:3.6.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queryparser:6.2.1" level="project" />
@@ -18,5 +22,8 @@
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-sandbox:6.2.1" level="project" />
     <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.10.1" level="project" />
     <orderEntry type="library" name="Maven: mysql:mysql-connector-java:6.0.5" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.jena:jena-fuseki-server:2.4.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.jena:jena-fuseki-war:war:2.4.1" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.21" level="project" />
   </component>
 </module>

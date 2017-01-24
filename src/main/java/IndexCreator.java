@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
  */
 public class IndexCreator {
 
+    //TODO: maybe adding the word location in the document
     Map<String, WordAttribute> vocabulary;
 
     public Map<String, WordAttribute> getVocabulary() {
@@ -56,12 +57,12 @@ public class IndexCreator {
 
     }
 
-    public void createIndex(String resourcesPath) {
+    public void createIndex() {
         DbConnect dbConnect = new DbConnect();
         //Connection conn = dbConnect.getConnection();
         //String query = "INSERT INTO RI.`vocabulaire`(`mot`, `frequence`) VALUES( ?, ?)";
         createVocabulary();
-
+        fillDatabase();
     }
 
     /**
@@ -126,7 +127,7 @@ public class IndexCreator {
             DbConnect dbConnect = new DbConnect();
             Connection connection = dbConnect.getConnection();
             connection.setAutoCommit(false);
-            String queryIndex = "INSERT INTO RI.`index`(`mot`, `document`, `frequence`) VALUES( ?, ?, ?)";
+            String queryIndex = "INSERT INTO `index`(`mot`, `document`, `frequence`) VALUES( ?, ?, ?)";
             PreparedStatement psIndex = connection.prepareStatement(queryIndex);
             Set set = vocabulary.entrySet();
             Iterator i = set.iterator();
@@ -150,5 +151,15 @@ public class IndexCreator {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * Used to create the index in the new database
+     * @param args
+     */
+    public static void main(String[] args) {
+        IndexCreator indexCreator = new IndexCreator();
+        indexCreator.createIndex();
+        System.out.println("OK");
     }
 }
