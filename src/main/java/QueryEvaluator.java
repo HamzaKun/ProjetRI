@@ -1,3 +1,4 @@
+import org.tartarus.snowball.ext.FrenchStemmer;
 import sparql.KnowledgeBase;
 import java.sql.Statement;
 import java.io.File;
@@ -13,7 +14,7 @@ public class QueryEvaluator {
 
     private JsoupUnit jsoup;
     private String[] queries;
-    private List<Map<String, Integer>> result;
+    private List<Map<String, Float>> result;
     private static final int NUMBER_DOC = 138;
     private KnowledgeBase knowledgeBase;
 
@@ -24,8 +25,8 @@ public class QueryEvaluator {
      * @return
      * @throws SQLException
      */
-    public Map<String, Integer> evaluateQuery(String[] query, Connection connection) throws SQLException {
-        Map<String, Integer> queryResult = new LinkedHashMap<String, Integer>();
+    public Map<String, Float> evaluateQuery(String[] query, Connection connection) throws SQLException {
+        Map<String, Float> queryResult = new LinkedHashMap<String, Float>();
         for (String word : query) {
             String sqlQuery = "Select document, frequence from `index` where `index`.`mot` like '%" + word + "%'";//mot like '%"+ word +"%'";
             Statement stmt = connection.createStatement();
@@ -34,7 +35,7 @@ public class QueryEvaluator {
                 String document = rs.getString("document");
                 int frequence = rs.getInt("frequence");
                 if ( queryResult.get(document) == null ) {
-                    queryResult.put(document, frequence);
+                    queryResult.put(document, Float.valueOf(frequence));
                 }else {
                     queryResult.put(document, queryResult.get(document) + frequence);
                 }
@@ -45,10 +46,10 @@ public class QueryEvaluator {
         }
         for(int i = 1;i<= NUMBER_DOC;i++){
             if(!queryResult.containsKey("D"+i+".html")){
-                queryResult.put("D"+i+".html",Integer.valueOf(0));
+                queryResult.put("D"+i+".html",Float.valueOf(0));
             }
         }
-        queryResult = (LinkedHashMap<String, Integer>) sortByValue(queryResult);
+        queryResult = (LinkedHashMap<String, Float>) sortByValue(queryResult);
         return queryResult;
     }
 
@@ -59,26 +60,29 @@ public class QueryEvaluator {
      * @return
      * @throws SQLException
      */
-    public Map<String, Integer> evaluateQueryNormalised(String[] query, Connection connection) throws SQLException {
-        String tfMaxQuery = "select max(frequence) from `index`";
+    public Map<String, Float> evaluateQueryNormalised(String[] query, Connection connection) throws SQLException {
+
+        Map<String,Integer> tfMax = new HashMap<String, Integer>();
+        String tfMaxQuery = "select max(frequence), document from `index` group by(document) ";
         Statement statementTfMax = connection.createStatement();
         ResultSet resultSet = statementTfMax.executeQuery(tfMaxQuery);
-        int tfMax = 1;
         while (resultSet.next()) {
-            tfMax = resultSet.getInt(1);
+            tfMax.put(resultSet.getString("document"),resultSet.getInt("max(frequence)"));
         }
-        Map<String, Integer> queryResult = new LinkedHashMap<String, Integer>();
+        Map<String, Float> queryResult = new LinkedHashMap<String, Float>();
         for (String word : query) {
             String sqlQuery = "Select document, frequence from `index` where `index`.`mot` like '%" + word + "%'";//mot like '%"+ word +"%'";
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(sqlQuery);
             while (rs.next()) {
                 String document = rs.getString("document");
+                //Statement statementTfMax = connection.createStatement();
                 int frequence = rs.getInt("frequence");
                 if ( queryResult.get(document) == null ) {
-                    queryResult.put(document, (frequence/tfMax));
+                    Float f = Float.valueOf((float) frequence/tfMax.get(document));
+                    queryResult.put(document, f);
                 }else {
-                    queryResult.put(document, queryResult.get(document) + (frequence/tfMax) );
+                    queryResult.put(document, queryResult.get(document) + (float)(frequence/tfMax.get(document)) );
                 }
             }
             rs.close();
@@ -86,10 +90,10 @@ public class QueryEvaluator {
         }
         for(int i = 1;i<= NUMBER_DOC;i++){
             if(!queryResult.containsKey("D"+i+".html")){
-                queryResult.put("D"+i+".html",Integer.valueOf(0));
+                queryResult.put("D"+i+".html",Float.valueOf(0));
             }
         }
-        queryResult = (LinkedHashMap<String, Integer>) sortByValue(queryResult);
+        queryResult = (LinkedHashMap<String, Float>) sortByValue(queryResult);
         return queryResult;
     }
 
@@ -98,11 +102,11 @@ public class QueryEvaluator {
      * @param queries
      * @return a list, for each query a sorted map of the document and it's pertinence
      */
-    public List<Map<String, Integer>> evaluateQueries(List<String[]> queries) {
+    public List<Map<String, Float>> evaluateQueries(List<String[]> queries) {
         try {
             DbConnect dbConnect = new DbConnect();
             Connection connection = dbConnect.getConnection();
-            result = new ArrayList<Map<String, Integer>>();
+            result = new ArrayList<Map<String, Float>>();
             int i = 1;
             for (String[] query : queries) {
                 //System.out.println("For the query :" + i++);
@@ -121,17 +125,17 @@ public class QueryEvaluator {
      * @param queries Represents the un-stemmed queries
      * @return
      */
-    public List<Map<String, Integer>> evaluateSemanticQueries(List<String[]> queries) {
+    public List<Map<String, Float>> evaluateSemanticQueries(List<String[]> queries) {
         try {
             DbConnect dbConnect = new DbConnect();
             Connection connection = dbConnect.getConnection();
-            result = new ArrayList<Map<String, Integer>>();
+            result = new ArrayList<Map<String, Float>>();
             knowledgeBase = new KnowledgeBase();
             for (String[] query : queries) {
                 //System.out.println("For the query :" + i++);
                 ArrayList<String> addTerms = new ArrayList<String>(Arrays.asList(query));
                 for (int j = 0; j < query.length; j++) {
-                    //In this method we need unstemmed words to get the semantic enrichment
+                    //In this method we need unstemmed wordsd to get the semantic enrichment
                     ArrayList<String> synonyms = knowledgeBase.findSynonym(query[j]);
                     //Removing the redundant terms
                     for (int i = 0; i < synonyms.size(); i++) {
@@ -141,21 +145,34 @@ public class QueryEvaluator {
                     }
                 }
                 List<String> tmp = new ArrayList<String>();
+                tmp.addAll(addTerms);
+
                 //Map<String, Integer> tmp = new HashMap<String, Integer>();
                 //We enrich it even more using the knowledgeBase find relations
                 for (int i = 0; i < addTerms.size() - 1; i++) {
                     ArrayList<String> results = (ArrayList<String>) knowledgeBase.findRelation(
                             addTerms.get(i), addTerms.get(i+1));
-                    tmp.addAll(addTerms);
-                    if ( i == addTerms.size() - 2)
-                        tmp.add(addTerms.get(addTerms.size() - 1));
-                    for (String res :
-                            results) {
+//                    if ( i == addTerms.size() - 2)
+//                        tmp.add(addTerms.get(addTerms.size() - 1));
+                    for (String res : results) {
                         if ( !tmp.contains(res) )
                             tmp.add(res);
                     }
                 }
-                String [] enrichedQuery = tmp.toArray(new String[0]);
+                List<String> resultList = new ArrayList<String>();
+                for(String word:tmp){
+                    Collections.addAll(resultList, word.split("[^\\p{L}\\d]+"));
+                }
+                resultList.removeAll(Arrays.asList(HtmlReader.FRENCH_STOP_WORDS));
+                String[] enrichedQuery = new String[resultList.size()];
+                int j = 0;
+                for(String word:resultList){
+                    FrenchStemmer frenchStemmer = new FrenchStemmer();
+                    frenchStemmer.setCurrent(word);
+                    frenchStemmer.stem();
+                    enrichedQuery[j++] = frenchStemmer.getCurrent();
+                }
+                //String [] enrichedQuery = resultList.toArray(new String[0]);
                 //Remove les redundant terms ??????
                 result.add(evaluateQueryNormalised(enrichedQuery, connection));
             }

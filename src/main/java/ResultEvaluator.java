@@ -16,7 +16,7 @@ public class ResultEvaluator {
      */
     public List<List<Integer>> evaluate() {
         List<List<Integer>> sortedRes = new ArrayList<List<Integer>>();
-        List<Map<String, Integer>> queriesResult = null;
+        List<Map<String, Float>> queriesResult = null;
         QueryEvaluator queryEvaluator = new QueryEvaluator();
         File file = new File("target/classes/requetes_2.html");
         JsoupUnit jsoup = new JsoupUnit();
@@ -29,7 +29,7 @@ public class ResultEvaluator {
                 File pertFile = new File("target/classes/qrels/qrelQ" + (i+1) + ".txt");
                 pertinence = (LinkedHashMap) parsePertinenceFile(pertFile);
                 //System.out.println(pertinence);
-                Map<String, Integer> result = queriesResult.get(i);
+                Map<String, Float> result = queriesResult.get(i);
                 Set set = result.entrySet();
                 Iterator it = set.iterator();
                 while (it.hasNext()) {

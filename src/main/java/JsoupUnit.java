@@ -45,7 +45,12 @@ public class JsoupUnit {
         Elements keyWords = doc.getElementsByTag("dd");
         for(int i = 0;i < keyWords.size();i += 2){
             //We stem the words before adding them to the query list
-            String[] words = keyWords.get(i).text().split("[^\\p{L}\\d]+");
+            /**
+             * Specifier the divider.
+             * */
+            String[] words = keyWords.get(i).text().split(", ");
+
+            //String[] words = keyWords.get(i).text().split("[^\\p{L}\\d]+");
             if (stemmed) {
                 FrenchStemmer frenchStemmer = new FrenchStemmer();
                 String[] stemmedWords = new String[words.length];
